@@ -125,14 +125,15 @@
       </section>
     </div>
 
-    <template id="cardTemplate">
-      <article class="group bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow" draggable="true">
+    <template id="cardTemplate" class="">
+      <article class="group bg-white mb-3 rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow" draggable="true">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="text-base font-semibold truncate" data-field="word"></div>
             <div class="text-sm text-slate-500 whitespace-pre-wrap" data-field="example"></div>
           </div>
           <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <button title="Прослушать" class="speakBtn rounded-md px-2 py-1 text-xs bg-sky-50 text-sky-700 hover:bg-sky-100">🔊</button>
             <button class="editBtn rounded-md px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200">Редакт.</button>
             <button class="deleteBtn rounded-md px-2 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200">Удалить</button>
           </div>
@@ -169,6 +170,41 @@
       const importInput = document.getElementById('importInput');
       const toolbarToggleBtn = document.getElementById('toolbarToggleBtn');
       const toolbarContent = document.getElementById('toolbarContent');
+      // Speech synthesis state
+      const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
+      let cachedVoices = [];
+      function loadVoices() {
+        if (!synth) return [];
+        const v = synth.getVoices();
+        if (v && v.length) cachedVoices = v;
+        return cachedVoices;
+      }
+      function pickEnglishVoice() {
+        const voices = loadVoices();
+        // Prefer en-US female-ish voices, then any en*
+        const pref = voices.find(x => /en-US/i.test(x.lang) && /female|Samantha|Victoria|Allison|Olivia/i.test(x.name));
+        if (pref) return pref;
+        const en = voices.find(x => /^en[-_]/i.test(x.lang));
+        return en || voices[0] || null;
+      }
+      function speak(text) {
+        if (!synth || !text) return;
+        try {
+          const utter = new SpeechSynthesisUtterance(text);
+          const voice = pickEnglishVoice();
+          if (voice) utter.voice = voice;
+          utter.lang = (voice && voice.lang) || 'en-US';
+          utter.rate = 0.95;
+          utter.pitch = 1.0;
+          synth.cancel();
+          synth.speak(utter);
+        } catch {}
+      }
+      if (synth) {
+        // Some browsers populate voices asynchronously
+        synth.onvoiceschanged = () => { loadVoices(); };
+        loadVoices();
+      }
 
       const STORAGE_KEY_OLD = 'dict_cards_v1';
       const STORAGE_KEY = 'dict_categories_v1';
@@ -282,6 +318,17 @@
             const { bg, text } = posToColors(card.pos);
             posBadge.className = `text-[10px] font-medium px-1.5 py-0.5 rounded-md ${bg} ${text}`;
             posBadge.classList.remove('hidden');
+          }
+
+          // Speak button
+          const speakBtn = node.querySelector('.speakBtn');
+          if (synth && speakBtn) {
+            speakBtn.addEventListener('click', (e) => {
+              e.stopPropagation();
+              speak(card.word);
+            });
+          } else if (speakBtn) {
+            speakBtn.classList.add('hidden');
           }
 
           // Drag meta
