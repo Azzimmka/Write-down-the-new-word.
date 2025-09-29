@@ -6,11 +6,12 @@
     <title>Словарь — добавление слов</title>
     <script src="https://cdn.tailwindcss.com"></script>
   </head>
-  <body class="min-h-screen bg-slate-50 text-slate-900">
+  <body class="min-h-screen bg-slate-50 text-slate-900 transition-colors duration-300" id="rootBody">
     <div class="max-w-4xl mx-auto px-4 py-8">
       <header class="mb-6 flex items-center justify-between gap-4">
         <h1 class="text-2xl font-semibold">Мой словарь</h1>
         <div class="flex items-center gap-2 text-sm text-slate-500">
+          <button id="darkModeBtn" class="rounded-md bg-slate-100 px-3 py-1.5 hover:bg-slate-200 text-slate-700">🌙 Тема</button>
           <span>⌘ + Enter — добавить</span>
         </div>
       </header>
@@ -96,10 +97,18 @@
       <section>
         <div class="flex items-center justify-between mb-3">
           <h2 class="text-lg font-medium">Карточки</h2>
-          <div class="text-sm text-slate-500"><span id="count">0</span> шт.</div>
+          <div class="flex items-center gap-3">
+            <div class="w-40 hidden sm:block">
+              <div class="h-2 bg-slate-200 rounded-full overflow-hidden">
+                <div id="progressBar" class="h-full w-0 bg-gradient-to-r from-sky-400 to-emerald-400 transition-all"></div>
+              </div>
+              <div class="text-[10px] mt-1 text-slate-500" id="progressLabel">0% выучено</div>
+            </div>
+            <div class="text-sm text-slate-500"><span id="count">0</span> шт.</div>
+          </div>
         </div>
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div class="rounded-xl border border-red-200 bg-red-50 p-3">
+        <div class="grid grid-cols-1  md:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-red-200 bg-red-50 p-3 pb-14">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-sm font-semibold text-red-700 flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
@@ -107,10 +116,10 @@
               </h3>
               <span class="text-xs font-semibold inline-flex items-center justify-center rounded-full bg-red-100 text-red-700 px-2 py-0.5" id="unlearnedCount">0</span>
             </div>
-            <div id="unlearnedCol" class="min-h-40 rounded-lg border border-dashed border-red-300 p-2 transition-all" data-dropzone="unlearned"></div>
+            <div id="unlearnedCol" class="min-h-full rounded-lg border border-dashed border-red-300 p-2 transition-all" data-dropzone="unlearned"></div>
             <div id="unlearnedEmpty" class="text-xs text-red-700/80 mt-2">Перетащите карточки сюда</div>
           </div>
-          <div class="rounded-xl border border-green-200 bg-green-50 p-3">
+          <div class="rounded-xl border border-green-200 bg-green-50 p-3 pb-14">
             <div class="flex items-center justify-between mb-2">
               <h3 class="text-sm font-semibold text-green-700 flex items-center gap-2">
                 <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
@@ -118,7 +127,7 @@
               </h3>
               <span class="text-xs font-semibold inline-flex items-center justify-center rounded-full bg-green-100 text-green-700 px-2 py-0.5" id="learnedCount">0</span>
             </div>
-            <div id="learnedCol" class="min-h-40 rounded-lg border border-dashed border-green-300 p-2 transition-all" data-dropzone="learned"></div>
+            <div id="learnedCol" class="min-h-full rounded-lg border border-dashed border-green-300 p-2 transition-all" data-dropzone="learned"></div>
             <div id="learnedEmpty" class="text-xs text-green-700/80 mt-2">Перетащите карточки сюда</div>
           </div>
         </div>
@@ -126,7 +135,7 @@
     </div>
 
     <template id="cardTemplate" class="">
-      <article class="group bg-white mb-3 rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow" draggable="true">
+      <article class="group bg-white mb-3 rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-lg transition-all hover:-translate-y-0.5" draggable="true">
         <div class="flex items-start justify-between gap-3">
           <div class="min-w-0">
             <div class="text-base font-semibold truncate" data-field="word"></div>
@@ -136,6 +145,7 @@
             <button title="Прослушать" class="speakBtn rounded-md px-2 py-1 text-xs bg-sky-50 text-sky-700 hover:bg-sky-100">🔊</button>
             <button class="editBtn rounded-md px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200">Редакт.</button>
             <button class="deleteBtn rounded-md px-2 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200">Удалить</button>
+            <button class="copyBtn rounded-md px-2 py-1 text-xs bg-emerald-50 text-emerald-700 hover:bg-emerald-100">Копир.</button>
           </div>
         </div>
         <div class="flex items-center gap-2 -mt-1">
@@ -148,6 +158,13 @@
         </div>
       </article>
     </template>
+
+    <!-- Floating Quick Add Button -->
+    <button id="quickAddBtn" class="fixed bottom-6 right-6 rounded-full bg-sky-600 text-white w-12 h-12 shadow-lg hover:bg-sky-700 active:bg-sky-800">+
+    </button>
+
+    <!-- Toasts -->
+    <div id="toast" class="fixed bottom-20 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-sm px-3 py-2 rounded-md shadow-lg opacity-0 pointer-events-none transition-opacity"></div>
 
     <script>
       const entryForm = document.getElementById('entryForm');
@@ -170,6 +187,12 @@
       const importInput = document.getElementById('importInput');
       const toolbarToggleBtn = document.getElementById('toolbarToggleBtn');
       const toolbarContent = document.getElementById('toolbarContent');
+      const darkModeBtn = document.getElementById('darkModeBtn');
+      const rootBody = document.getElementById('rootBody');
+      const progressBar = document.getElementById('progressBar');
+      const progressLabel = document.getElementById('progressLabel');
+      const quickAddBtn = document.getElementById('quickAddBtn');
+      const toastEl = document.getElementById('toast');
       // Speech synthesis state
       const synth = 'speechSynthesis' in window ? window.speechSynthesis : null;
       let cachedVoices = [];
@@ -270,6 +293,13 @@
         countEl.textContent = String(total);
         learnedCountEl.textContent = String(learned);
         unlearnedCountEl.textContent = String(unlearned);
+        const ratio = total ? Math.round((learned / total) * 100) : 0;
+        if (progressBar) {
+          progressBar.style.width = ratio + '%';
+        }
+        if (progressLabel) {
+          progressLabel.textContent = ratio + '% выучено';
+        }
       }
 
       function renderCategories(state) {
@@ -376,6 +406,20 @@
             saveState(s);
             renderCards(s);
           });
+
+          // Copy
+          const copyBtn = node.querySelector('.copyBtn');
+          if (copyBtn && navigator.clipboard) {
+            copyBtn.addEventListener('click', async (e) => {
+              e.stopPropagation();
+              try {
+                await navigator.clipboard.writeText(`${card.word} — ${card.ru || ''}`.trim());
+                showToast('Скопировано');
+              } catch {
+                showToast('Не удалось скопировать');
+              }
+            });
+          }
 
           (card.learned ? learnedCol : unlearnedCol).appendChild(node);
         });
@@ -581,6 +625,42 @@
       }
       renderCards(state);
       wordInput.focus();
+
+      // Dark mode
+      const THEME_KEY = 'dict_theme_dark';
+      function applyThemeFromStorage() {
+        const isDark = localStorage.getItem(THEME_KEY) === '1';
+        rootBody.classList.toggle('dark', isDark);
+        if (isDark) {
+          rootBody.classList.add('bg-slate-900', 'text-slate-100');
+        } else {
+          rootBody.classList.remove('bg-slate-900', 'text-slate-100');
+        }
+      }
+      applyThemeFromStorage();
+      darkModeBtn.addEventListener('click', () => {
+        const isDark = !(localStorage.getItem(THEME_KEY) === '1');
+        localStorage.setItem(THEME_KEY, isDark ? '1' : '0');
+        applyThemeFromStorage();
+      });
+
+      // Quick add opens focus to word
+      quickAddBtn.addEventListener('click', () => {
+        wordInput.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        wordInput.focus();
+      });
+
+      // Toast helper
+      let toastTimer = null;
+      function showToast(msg) {
+        if (!toastEl) return;
+        toastEl.textContent = msg;
+        toastEl.classList.remove('opacity-0');
+        if (toastTimer) clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          toastEl.classList.add('opacity-0');
+        }, 1200);
+      }
     </script>
   </body>
   </html>
