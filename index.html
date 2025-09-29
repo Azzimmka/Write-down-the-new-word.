@@ -1,0 +1,541 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Словарь — добавление слов</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+  </head>
+  <body class="min-h-screen bg-slate-50 text-slate-900">
+    <div class="max-w-4xl mx-auto px-4 py-8">
+      <header class="mb-6 flex items-center justify-between gap-4">
+        <h1 class="text-2xl font-semibold">Мой словарь</h1>
+        <div class="flex items-center gap-2 text-sm text-slate-500">
+          <span>⌘ + Enter — добавить</span>
+        </div>
+      </header>
+
+      <section class="bg-white/95 backdrop-blur rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-4 sticky top-0 z-10">
+        <div class="flex items-center justify-between md:hidden">
+          <div class="text-sm font-medium text-slate-700">Панель инструментов</div>
+          <button id="toolbarToggleBtn" class="rounded-md px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200">Свернуть</button>
+        </div>
+        <div id="toolbarContent" class="mt-3 md:mt-0 md:block">
+        <div class="flex flex-col md:flex-row md:items-end gap-3 mb-4">
+          <div class="flex-1">
+            <label class="text-sm font-medium" for="categorySelect">Категория</label>
+            <div class="mt-1 flex items-center gap-2">
+              <div class="relative w-full">
+                <select id="categorySelect" class="max-w-[120px] appearance-none rounded-lg border-2 border-slate-300 bg-white px-3 h-11 pr-9 text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"></select>
+                <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">▾</div>
+              </div>
+              <button id="addCategoryBtn" class="rounded-lg bg-sky-600 px-3 h-11 text-sm text-white hover:bg-sky-700">+ Категория</button>
+              <button id="renameCategoryBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">Переимен.</button>
+              <button id="deleteCategoryBtn" class="rounded-lg bg-red-100 px-3 h-11 text-sm text-red-700 hover:bg-red-200">Удалить</button>
+            </div>
+          </div>
+          <div class="md:w-80">
+            <label class="text-sm font-medium" for="searchInput">Поиск</label>
+            <input id="searchInput" type="text" placeholder="Поиск по слову/переводу" class="mt-1 w-full rounded-lg border-2 border-slate-300 bg-white px-3 h-11 text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+          </div>
+          <div class="flex items-end gap-2">
+            <button id="exportBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">⬇︎ Экспорт</button>
+            <label class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200 cursor-pointer inline-flex items-center">
+              ⬆︎ Импорт
+              <input id="importInput" type="file" accept="application/json" class="hidden">
+            </label>
+          </div>
+        </div>
+
+        <form id="entryForm" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="space-y-2 md:col-span-1">
+            <label for="wordInput" class="text-sm font-medium">Слово</label>
+            <input id="wordInput" type="text" placeholder="Введите слово"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" required>
+          </div>
+
+          <div class="space-y-2 md:col-span-1">
+            <label for="posSelect" class="text-sm font-medium">Часть речи</label>
+            <select id="posSelect" class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+              <option value="">— не указано —</option>
+              <option value="noun">Сущ. (noun)</option>
+              <option value="verb">Глаг. (verb)</option>
+              <option value="adj">Прил. (adj)</option>
+              <option value="adv">Нареч. (adv)</option>
+              <option value="phrase">Фраза</option>
+              <option value="other">Другое</option>
+            </select>
+          </div>
+
+          <div class="space-y-2 md:col-span-1">
+            <label for="exampleInput" class="text-sm font-medium">Пример (1 предложение)</label>
+            <input id="exampleInput" type="text" placeholder="Пример использования"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+          </div>
+
+          <div class="space-y-2 md:col-span-3">
+            <label for="ruInput" class="text-sm font-medium">Перевод (RU)</label>
+            <input id="ruInput" type="text" placeholder="Ваш перевод на русский"
+              class="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+          </div>
+
+          <div class="md:col-span-3 flex items-center gap-3">
+            <button type="submit"
+              class="inline-flex items-center justify-center rounded-lg bg-sky-600 px-4 py-2 text-white hover:bg-sky-700 active:bg-sky-800 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sky-500">
+              Добавить
+            </button>
+            <button type="button" id="clearAllBtn"
+              class="text-slate-600 hover:text-red-600 text-sm">
+              Очистить все
+            </button>
+          </div>
+        </form>
+        </div>
+      </section>
+
+      <section>
+        <div class="flex items-center justify-between mb-3">
+          <h2 class="text-lg font-medium">Карточки</h2>
+          <div class="text-sm text-slate-500"><span id="count">0</span> шт.</div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div class="rounded-xl border border-red-200 bg-red-50 p-3">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-semibold text-red-700 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-red-500"></span>
+                Не выученные
+              </h3>
+              <span class="text-xs font-semibold inline-flex items-center justify-center rounded-full bg-red-100 text-red-700 px-2 py-0.5" id="unlearnedCount">0</span>
+            </div>
+            <div id="unlearnedCol" class="min-h-40 rounded-lg border border-dashed border-red-300 p-2 transition-all" data-dropzone="unlearned"></div>
+            <div id="unlearnedEmpty" class="text-xs text-red-700/80 mt-2">Перетащите карточки сюда</div>
+          </div>
+          <div class="rounded-xl border border-green-200 bg-green-50 p-3">
+            <div class="flex items-center justify-between mb-2">
+              <h3 class="text-sm font-semibold text-green-700 flex items-center gap-2">
+                <span class="inline-block w-2 h-2 rounded-full bg-green-500"></span>
+                Выученные
+              </h3>
+              <span class="text-xs font-semibold inline-flex items-center justify-center rounded-full bg-green-100 text-green-700 px-2 py-0.5" id="learnedCount">0</span>
+            </div>
+            <div id="learnedCol" class="min-h-40 rounded-lg border border-dashed border-green-300 p-2 transition-all" data-dropzone="learned"></div>
+            <div id="learnedEmpty" class="text-xs text-green-700/80 mt-2">Перетащите карточки сюда</div>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <template id="cardTemplate">
+      <article class="group bg-white rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-md transition-shadow" draggable="true">
+        <div class="flex items-start justify-between gap-3">
+          <div class="min-w-0">
+            <div class="text-base font-semibold truncate" data-field="word"></div>
+            <div class="text-sm text-slate-500 whitespace-pre-wrap" data-field="example"></div>
+          </div>
+          <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
+            <button class="editBtn rounded-md px-2 py-1 text-xs bg-slate-100 hover:bg-slate-200">Редакт.</button>
+            <button class="deleteBtn rounded-md px-2 py-1 text-xs bg-red-100 text-red-700 hover:bg-red-200">Удалить</button>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 -mt-1">
+          <span data-field="pos" class="hidden text-[10px] font-medium px-1.5 py-0.5 rounded-md"></span>
+        </div>
+        <div>
+          <label class="text-xs text-slate-500">Перевод (RU)</label>
+          <input data-field="ru" type="text" placeholder="Введите перевод"
+            class="mt-1 w-full rounded-lg border border-slate-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500" />
+        </div>
+      </article>
+    </template>
+
+    <script>
+      const entryForm = document.getElementById('entryForm');
+      const wordInput = document.getElementById('wordInput');
+      const exampleInput = document.getElementById('exampleInput');
+      const posSelect = document.getElementById('posSelect');
+      const ruInput = document.getElementById('ruInput');
+      const countEl = document.getElementById('count');
+      const clearAllBtn = document.getElementById('clearAllBtn');
+      const unlearnedCol = document.getElementById('unlearnedCol');
+      const learnedCol = document.getElementById('learnedCol');
+      const unlearnedCountEl = document.getElementById('unlearnedCount');
+      const learnedCountEl = document.getElementById('learnedCount');
+      const categorySelect = document.getElementById('categorySelect');
+      const addCategoryBtn = document.getElementById('addCategoryBtn');
+      const renameCategoryBtn = document.getElementById('renameCategoryBtn');
+      const deleteCategoryBtn = document.getElementById('deleteCategoryBtn');
+      const searchInput = document.getElementById('searchInput');
+      const exportBtn = document.getElementById('exportBtn');
+      const importInput = document.getElementById('importInput');
+      const toolbarToggleBtn = document.getElementById('toolbarToggleBtn');
+      const toolbarContent = document.getElementById('toolbarContent');
+
+      const STORAGE_KEY_OLD = 'dict_cards_v1';
+      const STORAGE_KEY = 'dict_categories_v1';
+
+      function createId() {
+        return 'id_' + Math.random().toString(36).slice(2, 9);
+      }
+
+      function defaultCategory() {
+        return { id: createId(), name: 'По умолчанию', items: [] };
+      }
+
+      function loadState() {
+        // migrate if needed
+        const rawNew = localStorage.getItem(STORAGE_KEY);
+        if (rawNew) {
+          try {
+            const data = JSON.parse(rawNew);
+            if (data && Array.isArray(data.categories)) return data;
+          } catch {}
+        }
+        // check old storage
+        const rawOld = localStorage.getItem(STORAGE_KEY_OLD);
+        if (rawOld) {
+          try {
+            const oldCards = JSON.parse(rawOld);
+            const cat = defaultCategory();
+            cat.name = 'Импортировано';
+            cat.items = (Array.isArray(oldCards) ? oldCards : []).map(c => ({
+              id: c.id || createId(),
+              word: c.word || '',
+              example: c.example || '',
+              ru: c.ru || '',
+              learned: false,
+              pos: c.pos || ''
+            }));
+            const state = { selectedCategoryId: cat.id, categories: [cat] };
+            saveState(state);
+            localStorage.removeItem(STORAGE_KEY_OLD);
+            return state;
+          } catch {}
+        }
+        const init = { selectedCategoryId: null, categories: [defaultCategory()], ui: { toolbarCollapsed: false } };
+        init.selectedCategoryId = init.categories[0].id;
+        saveState(init);
+        return init;
+      }
+
+      function saveState(state) {
+        // ensure ui key exists
+        if (!state.ui) state.ui = { toolbarCollapsed: false };
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+      }
+
+      function getCurrentCategory(state) {
+        return state.categories.find(c => c.id === state.selectedCategoryId) || state.categories[0];
+      }
+
+      function updateCounters(items) {
+        const total = items.length;
+        const learned = items.filter(i => i.learned).length;
+        const unlearned = total - learned;
+        countEl.textContent = String(total);
+        learnedCountEl.textContent = String(learned);
+        unlearnedCountEl.textContent = String(unlearned);
+      }
+
+      function renderCategories(state) {
+        categorySelect.innerHTML = '';
+        state.categories.forEach(cat => {
+          const opt = document.createElement('option');
+          opt.value = cat.id;
+          opt.textContent = cat.name;
+          if (cat.id === state.selectedCategoryId) opt.selected = true;
+          categorySelect.appendChild(opt);
+        });
+      }
+
+      function renderCards(state) {
+        const category = getCurrentCategory(state);
+        const query = searchInput.value.trim().toLowerCase();
+        unlearnedCol.innerHTML = '';
+        learnedCol.innerHTML = '';
+        document.getElementById('unlearnedEmpty').classList.add('hidden');
+        document.getElementById('learnedEmpty').classList.add('hidden');
+        const tpl = document.getElementById('cardTemplate');
+        const filtered = category.items.filter(i => {
+          if (!query) return true;
+          return (
+            (i.word || '').toLowerCase().includes(query) ||
+            (i.example || '').toLowerCase().includes(query) ||
+            (i.ru || '').toLowerCase().includes(query) ||
+            (i.pos || '').toLowerCase().includes(query)
+          );
+        });
+        updateCounters(filtered);
+        const anyUnlearned = filtered.some(i => !i.learned);
+        const anyLearned = filtered.some(i => i.learned);
+        if (!anyUnlearned) document.getElementById('unlearnedEmpty').classList.remove('hidden');
+        if (!anyLearned) document.getElementById('learnedEmpty').classList.remove('hidden');
+        filtered.forEach(card => {
+          const node = tpl.content.firstElementChild.cloneNode(true);
+          node.dataset.id = card.id;
+          node.querySelector('[data-field="word"]').textContent = card.word;
+          node.querySelector('[data-field="example"]').textContent = card.example || '';
+          const ruField = node.querySelector('[data-field="ru"]');
+          ruField.value = card.ru || '';
+          const posBadge = node.querySelector('[data-field="pos"]');
+          if (card.pos) {
+            posBadge.textContent = posToLabel(card.pos);
+            const { bg, text } = posToColors(card.pos);
+            posBadge.className = `text-[10px] font-medium px-1.5 py-0.5 rounded-md ${bg} ${text}`;
+            posBadge.classList.remove('hidden');
+          }
+
+          // Drag meta
+          node.addEventListener('dragstart', (e) => {
+            e.dataTransfer.setData('text/plain', card.id);
+            e.dataTransfer.effectAllowed = 'move';
+          });
+
+          // Inline RU save
+          ruField.addEventListener('input', () => {
+            const s = loadState();
+            const cat = getCurrentCategory(s);
+            const idx = cat.items.findIndex(x => x.id === card.id);
+            if (idx !== -1) {
+              cat.items[idx].ru = ruField.value;
+              saveState(s);
+            }
+          });
+
+          // Edit
+          node.querySelector('.editBtn').addEventListener('click', () => {
+            const newWord = prompt('Слово', card.word);
+            if (newWord === null) return;
+            const newExample = prompt('Пример', card.example || '');
+            if (newExample === null) return;
+            const newPos = prompt('Часть речи (noun/verb/adj/adv/phrase/other)', card.pos || '');
+            const s = loadState();
+            const cat = getCurrentCategory(s);
+            const idx = cat.items.findIndex(x => x.id === card.id);
+            if (idx !== -1) {
+              cat.items[idx].word = newWord.trim();
+              cat.items[idx].example = newExample.trim();
+              cat.items[idx].pos = normalizePos(newPos);
+              saveState(s);
+              renderCards(s);
+            }
+          });
+
+          // Delete
+          node.querySelector('.deleteBtn').addEventListener('click', () => {
+            if (!confirm('Удалить карточку?')) return;
+            const s = loadState();
+            const cat = getCurrentCategory(s);
+            cat.items = cat.items.filter(x => x.id !== card.id);
+            saveState(s);
+            renderCards(s);
+          });
+
+          (card.learned ? learnedCol : unlearnedCol).appendChild(node);
+        });
+      }
+
+      function posToLabel(pos) {
+        switch (pos) {
+          case 'noun': return 'Сущ.';
+          case 'verb': return 'Глаг.';
+          case 'adj': return 'Прил.';
+          case 'adv': return 'Нареч.';
+          case 'phrase': return 'Фраза';
+          case 'other': return 'Другое';
+          default: return '';
+        }
+      }
+
+      function posToColors(pos) {
+        switch (pos) {
+          case 'noun': return { bg: 'bg-blue-100', text: 'text-blue-700' };
+          case 'verb': return { bg: 'bg-purple-100', text: 'text-purple-700' };
+          case 'adj': return { bg: 'bg-amber-100', text: 'text-amber-700' };
+          case 'adv': return { bg: 'bg-emerald-100', text: 'text-emerald-700' };
+          case 'phrase': return { bg: 'bg-pink-100', text: 'text-pink-700' };
+          default: return { bg: 'bg-slate-100', text: 'text-slate-700' };
+        }
+      }
+
+      function normalizePos(val) {
+        const v = String(val || '').trim().toLowerCase();
+        if (!v) return '';
+        const map = { noun:'noun', n:'noun', verb:'verb', v:'verb', adj:'adj', adjective:'adj', adv:'adv', adverb:'adv', phrase:'phrase', other:'other' };
+        return map[v] || '';
+      }
+
+      // DnD handlers for columns
+      function setupDropzone(zoneEl, learnedValue) {
+        zoneEl.addEventListener('dragover', (e) => {
+          e.preventDefault();
+          e.dataTransfer.dropEffect = 'move';
+          zoneEl.classList.add('ring-2', learnedValue ? 'ring-green-400' : 'ring-red-400', 'bg-white/40');
+        });
+        zoneEl.addEventListener('dragleave', () => {
+          zoneEl.classList.remove('ring-2', 'ring-green-400', 'ring-red-400', 'bg-white/40');
+        });
+        zoneEl.addEventListener('drop', (e) => {
+          e.preventDefault();
+          zoneEl.classList.remove('ring-2', 'ring-green-400', 'ring-red-400', 'bg-white/40');
+          const id = e.dataTransfer.getData('text/plain');
+          const s = loadState();
+          const cat = getCurrentCategory(s);
+          const idx = cat.items.findIndex(x => x.id === id);
+          if (idx !== -1) {
+            cat.items[idx].learned = learnedValue;
+            saveState(s);
+            renderCards(s);
+          }
+        });
+      }
+
+      // Category controls
+      categorySelect.addEventListener('change', () => {
+        const s = loadState();
+        s.selectedCategoryId = categorySelect.value;
+        saveState(s);
+        renderCategories(s);
+        renderCards(s);
+      });
+
+      addCategoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const name = prompt('Название категории');
+        if (!name) return;
+        const s = loadState();
+        const cat = { id: createId(), name: name.trim(), items: [] };
+        s.categories.push(cat);
+        s.selectedCategoryId = cat.id;
+        saveState(s);
+        renderCategories(s);
+        renderCards(s);
+      });
+
+      renameCategoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const s = loadState();
+        const cat = getCurrentCategory(s);
+        const name = prompt('Новое имя категории', cat.name);
+        if (name === null) return;
+        cat.name = name.trim() || cat.name;
+        saveState(s);
+        renderCategories(s);
+      });
+
+      deleteCategoryBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const s = loadState();
+        if (s.categories.length <= 1) {
+          alert('Нельзя удалить последнюю категорию');
+          return;
+        }
+        const cat = getCurrentCategory(s);
+        if (!confirm(`Удалить категорию "${cat.name}" и все её слова?`)) return;
+        s.categories = s.categories.filter(c => c.id !== cat.id);
+        s.selectedCategoryId = s.categories[0].id;
+        saveState(s);
+        renderCategories(s);
+        renderCards(s);
+      });
+
+      // Search
+      searchInput.addEventListener('input', () => {
+        renderCards(loadState());
+      });
+
+      // Export/Import
+      exportBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        const data = loadState();
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'dictionary_export.json';
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+        URL.revokeObjectURL(url);
+      });
+
+      importInput.addEventListener('change', async () => {
+        const file = importInput.files && importInput.files[0];
+        if (!file) return;
+        try {
+          const text = await file.text();
+          const data = JSON.parse(text);
+          if (!data || !Array.isArray(data.categories)) throw new Error('Неверный формат');
+          saveState(data);
+          renderCategories(data);
+          renderCards(data);
+        } catch (e) {
+          alert('Не удалось импортировать: ' + e.message);
+        } finally {
+          importInput.value = '';
+        }
+      });
+
+      // Add new card
+      entryForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const word = wordInput.value.trim();
+        const example = exampleInput.value.trim();
+        const ru = ruInput.value.trim();
+        const pos = posSelect.value;
+        if (!word) {
+          wordInput.focus();
+          return;
+        }
+        const s = loadState();
+        const cat = getCurrentCategory(s);
+        cat.items.unshift({ id: createId(), word, example, ru, learned: false, pos });
+        saveState(s);
+        renderCards(s);
+        entryForm.reset();
+        wordInput.focus();
+      });
+
+      // Keyboard: cmd/ctrl + enter submits
+      entryForm.addEventListener('keydown', (e) => {
+        if ((e.metaKey || e.ctrlKey) && e.key === 'Enter') {
+          e.preventDefault();
+          entryForm.requestSubmit();
+        }
+      });
+
+      clearAllBtn.addEventListener('click', () => {
+        if (!confirm('Очистить все карточки в текущей категории?')) return;
+        const s = loadState();
+        const cat = getCurrentCategory(s);
+        cat.items = [];
+        saveState(s);
+        renderCards(s);
+      });
+
+      // Toolbar collapse (mobile)
+      toolbarToggleBtn.addEventListener('click', () => {
+        const s = loadState();
+        const isHidden = toolbarContent.classList.toggle('hidden');
+        toolbarToggleBtn.textContent = isHidden ? 'Развернуть' : 'Свернуть';
+        if (!s.ui) s.ui = { toolbarCollapsed: false };
+        s.ui.toolbarCollapsed = isHidden;
+        saveState(s);
+      });
+
+      // init
+      setupDropzone(unlearnedCol, false);
+      setupDropzone(learnedCol, true);
+      const state = loadState();
+      renderCategories(state);
+      // Restore toolbar collapsed state on mobile
+      if (state.ui && state.ui.toolbarCollapsed) {
+        toolbarContent.classList.add('hidden');
+        toolbarToggleBtn.textContent = 'Развернуть';
+      }
+      renderCards(state);
+      wordInput.focus();
+    </script>
+  </body>
+  </html>
+
+
