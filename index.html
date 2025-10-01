@@ -17,7 +17,7 @@
       </header>
 
       <section class="bg-white/95 backdrop-blur rounded-xl shadow-sm border border-slate-200 p-4 md:p-6 mb-4 sticky top-0 z-10">
-        <div class="flex items-center justify-between md:hidden">
+        <div class="flex items-center justify-between ">
           <div class="text-sm font-medium text-slate-700">Панель инструментов</div>
           <button id="toolbarToggleBtn" class="rounded-md px-3 py-1.5 text-sm bg-slate-100 hover:bg-slate-200">Свернуть</button>
         </div>
@@ -25,14 +25,17 @@
         <div class="flex flex-col md:flex-row md:items-end gap-3 mb-4">
           <div class="flex-1">
             <label class="text-sm font-medium" for="categorySelect">Категория</label>
-            <div class="mt-1 flex items-center gap-2">
-              <div class="relative w-full">
-                <select id="categorySelect" class="max-w-[120px] appearance-none rounded-lg border-2 border-slate-300 bg-white px-3 h-11 pr-9 text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500"></select>
+            <div class="mt-1 flex flex-col md:flex-row  items-center gap-2">
+              <div class="relative w-full border-2 border-slate-300 rounded-lg focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
+                <select id="categorySelect" class="w-[300px] md:w-[200px] appearance-none rounded-lg  bg-white px-3 h-11 pr-9 text-base focus:outline-none "></select>
                 <div class="pointer-events-none absolute inset-y-0 right-2 flex items-center text-slate-400">▾</div>
               </div>
-              <button id="addCategoryBtn" class="rounded-lg bg-sky-600 px-3 h-11 text-sm text-white hover:bg-sky-700">+ Категория</button>
-              <button id="renameCategoryBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">Переимен.</button>
-              <button id="deleteCategoryBtn" class="rounded-lg bg-red-100 px-3 h-11 text-sm text-red-700 hover:bg-red-200">Удалить</button>
+              <div class="flex flex-row items-center gap-2">
+
+                <button id="addCategoryBtn" class="rounded-lg bg-sky-600 px-3 h-11 text-sm text-white hover:bg-sky-700">+ Категория</button>
+                <button id="renameCategoryBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">Переимен.</button>
+                <button id="deleteCategoryBtn" class="rounded-lg bg-red-100 px-3 h-11 text-sm text-red-700 hover:bg-red-200">Удалить</button>
+              </div>
             </div>
           </div>
           <div class="md:w-80">
@@ -40,9 +43,9 @@
             <input id="searchInput" type="text" placeholder="Поиск по слову/переводу" class="mt-1 w-full rounded-lg border-2 border-slate-300 bg-white px-3 h-11 text-base focus:outline-none focus:ring-2 focus:ring-sky-500 focus:border-sky-500">
           </div>
           <div class="flex items-end gap-2">
-            <button id="exportBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">⬇︎ Экспорт</button>
+            <button id="exportBtn" class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200">⬆︎ Экспорт</button>
             <label class="rounded-lg bg-slate-100 px-3 h-11 text-sm hover:bg-slate-200 cursor-pointer inline-flex items-center">
-              ⬆︎ Импорт
+              ⬇︎ Импорт
               <input id="importInput" type="file" accept="application/json" class="hidden">
             </label>
           </div>
@@ -136,10 +139,10 @@
 
     <template id="cardTemplate" class="">
       <article class="group bg-white mb-3 rounded-xl shadow-sm border border-slate-200 p-3 md:p-4 flex flex-col gap-3 cursor-grab active:cursor-grabbing hover:shadow-lg transition-all hover:-translate-y-0.5" draggable="true">
-        <div class="flex items-start justify-between gap-3">
-          <div class="min-w-0">
-            <div class="text-base font-semibold truncate" data-field="word"></div>
-            <div class="text-sm text-slate-500 whitespace-pre-wrap" data-field="example"></div>
+        <div class="flex flex-col  items-start justify-between gap-3">
+          <div class="max-w-[200px] flex flex-col gap-1">
+            <div class="text-base font-semibold  break-words w-[280px] md:w-[350px]" data-field="word"></div>
+            <div class="text-sm text-slate-600 w-[280px] md:w-[350px] break-words " data-field="example"></div>
           </div>
           <div class="flex items-center gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
             <button title="Прослушать" class="speakBtn rounded-md px-2 py-1 text-xs bg-sky-50 text-sky-700 hover:bg-sky-100">🔊</button>
